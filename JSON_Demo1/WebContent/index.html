@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="ProcessData">
+		<input type="text" id="usrNm" name="usrNm" /> <input type="password"
+			id="usrPwd" name="usrPwd" /> <input type="button" value="Enter"
+			onclick="demoFunction()" />
+	</form>
+	<script type="text/javascript">
+		function demoFunction() {
+			var userNm = document.getElementById("usrNm").value;
+			var userPwd = document.getElementById("usrPwd").value;
+
+			var user = {};
+			user.name = userNm;
+			user.pass = userPwd;
+
+			console.log(user);
+
+			//resp is an object of XMLHttpRequest used for implementing AJAX
+			var req = new XMLHttpRequest();
+
+			//here we are invoking the ProcessData Servlet using resp object
+			req.open("POST", "ProcessData", true);
+
+			//by default data is sent to servlet as queryString('?val=')
+			//but now we want to send data as JSON
+			req.setRequestHeader("Content-type", "application/json");
+
+			//checking state of request before sending it
+			console.log("before readystatechange: " + req.readyState);
+
+			//sending request to ProcessData and passing
+			//JSON object by converting to string
+			req.send(JSON.stringify(user));
+
+			//*********request sending part finishes here**************
+
+			req.onreadystatechange = function() {
+				//readyState=4 is checking if response is ready 
+				//status=200 is checking http status code of response
+				console.log("after readystatechange: " + req.readyState);
+				if (req.readyState == 4 && req.status == 200) {
+					if (req.responseText) {
+						//var data=JSON.parse(JSON.stringify(req.responseText));
+						var data=JSON.parse(req.responseText);
+						console.log(data.name);
+					}
+
+				}
+			}
+
+		}
+	</script>
+</body>
+</html>
